@@ -56,7 +56,7 @@ Used Image: [osboxes.org's Ubuntu 20.04](https://www.osboxes.org/ubuntu/#ubuntu-
 Replace `roles/rec_server/docker_launch/vars/main.yml`.
 
 ```sh
-$ echo webhook: <your webhookurl> > roles/rec_server/docker_launch/vars/main.yml
+$ echo "webhook: <your webhookurl>" > roles/rec_server/docker_launch/vars/main.yml
 ```
 
 ### 2. Using VAAPI (optional)
