@@ -1,0 +1,51 @@
+- name: stop apt-daily
+  shell: systemctl stop apt-daily.service apt-daily.timer
+  become: yes
+
+- name: disable apt-daily
+  shell: systemctl disable apt-daily.service apt-daily.timer
+  become: yes
+
+- name: set timezone
+  timezone:
+    name: Asia/Tokyo
+  become: yes
+
+- name: apt update
+  apt:
+    update_cache: yes
+  become: yes
+
+- name: apt upgrade (may wait long time)
+  apt:
+    upgrade: yes
+  become: yes
+
+- name: apt autoremove
+  apt:
+    autoremove: yes
+  become: yes
+
+- name: apt install packages
+  apt:
+    name:
+      - pkg-config
+      - vim
+      - openssh-server
+      - git
+  become: yes
+
+- name: docker install
+  snap:
+    name: docker
+    classic: yes
+    state: present
+  become: yes
+
+- name: docker service start
+  command: "snap start docker.dockerd"
+  become: yes
+
+- name: reboot server (reason... updated security)
+  reboot:
+  become: yes

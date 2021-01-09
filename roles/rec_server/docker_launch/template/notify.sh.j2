@@ -1,0 +1,87 @@
+#!/bin/sh
+webhook="{{ webhook }}"
+
+function recorded()
+{
+ mess=`cat << EOF
+ payload={
+	"channel": "$ch",
+	"link_names": 1 ,
+	"attachments": [{
+					"pretext": "[REPORT] Recorded",
+					"color": "#ffffff",
+					"title": "${NAME}(${CHANNELNAME})",
+					"text": "${DESCRIPTION}"
+					}]
+		 }
+EOF`
+ curl -X POST --data-urlencode "$mess" ${webhook}
+}
+
+function recording()
+{
+ mess=`cat << EOF
+ payload={
+	"channel": "$ch",
+	"link_names": 1 ,
+	"attachments": [{
+					"pretext": "[REPORT] Recording",
+					"color": "#ffffff",
+					"title": "${NAME}(${CHANNELNAME})",
+					"text": "${DESCRIPTION}"
+					}]
+		 }
+EOF`
+ curl -X POST --data-urlencode "$mess" ${webhook}
+}
+
+function recordedefail()
+{
+ mess=`cat << EOF
+ payload={
+	"channel": "$ch",
+	"link_names": 1 ,
+	"attachments": [{
+					"pretext": "[REPORT] Failed Record",
+					"color": "#00ff00",
+					"title": "${NAME}(${CHANNELNAME})",
+					"text": "${DESCRIPTION}"
+					}]
+		 }
+EOF`
+ curl -X POST --data-urlencode "$mess" ${webhook}
+}
+
+function tscheck()
+{
+ info="Error:${errorCnt}, Drop:${dropCnt}, Scrambling:${scramblingCnt}"
+ mess=`cat << EOF
+ payload={
+	"channel": "$ch",
+	"link_names": 1 ,
+	"attachments": [{
+					"pretext": "*[REPORT] Checked tsfile*",
+					"color": "#ffffff",
+					"title": "${NAME}",
+					"text": "${info}"
+					}]
+		 }
+EOF`
+ curl -X POST --data-urlencode "$mess" ${webhook}
+}
+
+
+
+while getopts f:s:e:c: OPT
+do
+ case $OPT in
+ f) recorded
+ ;;
+ s) recording
+ ;;
+ e) error
+ ;;
+ c) tscheck
+ ;;
+ esac
+done

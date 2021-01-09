@@ -1,0 +1,42 @@
+- name: mkfs.xfs install
+  apt:
+    name: xfsprogs
+  become: yes
+
+- name: format disk xfs
+  filesystem:
+    fstype: "xfs"
+    dev: "/dev/sdb"
+  become: yes
+
+- name: make mountpoint dir
+  file:
+    path: /mnt/extHDD/recorded
+    state: directory
+    mode: 0777
+  become: yes
+
+- name: mount /mnt/extHDD/recorded
+  mount:
+    name: /mnt/extHDD/recorded
+    src: "/dev/sdb"
+    fstype: "xfs"
+    opts: defaults,nofail
+    state: mounted
+  become: yes
+
+- name: chmod 777
+  file:
+    path: /mnt/extHDD/recorded
+    mode: 0777
+  become: yes
+
+- name: make rec dir
+  file:
+    path:
+      - /mnt/extHDD/recorded/ts
+      - /mnt/extHDD/recorded/mp4
+      - /mnt/extHDD/recorded/tmp
+    state: directory
+    mode: 0777
+  become: yes

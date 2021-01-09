@@ -1,0 +1,101 @@
+- name: get username
+  shell: "whoami"
+  register: username
+
+- name: get cpu core
+  shell: "sudo lshw -class processor | grep 'physical id'| awk '{print $3}'"
+  register: cpu_core
+  become: yes
+
+- name: create git dir
+  file: 
+    path: "/home/{{ username.stdout }}/git"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  become: yes
+
+- name: clear mirakurun-epgstation
+  file:
+    path: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation"
+    state: absent
+  become: yes
+  ignore_errors: yes
+
+- name: get mirakurun-epgstation
+  git:
+    repo: https://github.com/l3tnun/docker-mirakurun-epgstation.git
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
+  become: yes
+
+- name: deploy tuners.yml
+  template:
+    src: template/tuners.yml.j2
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/mirakurun/conf/tuners.yml"
+  become: yes
+
+- name: deploy channels.yml
+  template:
+    src: template/channels.yml.j2
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/mirakurun/conf/channels.yml"
+  become: yes
+
+- name: deploy docker-compose.yml
+  template:
+    src: template/docker-compose.yml.j2
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/docker-compose.yml"
+  become: yes
+
+- name: deploy Dockerfile
+  template:
+    src: template/Dockerfile.j2
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/Dockerfile"
+  become: yes
+
+- name: deploy config.json
+  template:
+    src: template/config.json.j2
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/config.json"
+  become: yes
+
+- name: deploy enc.js
+  template:
+    src: template/enc.js.j2
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/enc.js"
+  become: yes
+
+- name: deploy enc.sh
+  template:
+    src: template/enc.sh.j2
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/enc.sh"
+  become: yes
+
+- name: add doing permission to enc.sh
+  file:
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/enc.sh"
+    mode: "a+x"
+
+- name: deploy notify.sh
+  template:
+    src: template/notify.sh.j2
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/notify.sh"
+    mode: "a+x"
+  become: yes
+
+- name: add doing permission to notify.sh
+  file:
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/notify.sh"
+    mode: "a+x"
+
+- name: build mirakurun-epgstation (wait long time)
+  command: "docker-compose build --no-cache epgstation"
+  args:
+    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
+  become: yes
+
+- name: launch mirakurun-epgstation
+  command: "docker-compose up -d epgstation"
+  args:
+    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
+  become: yes

@@ -1,0 +1,5 @@
+- hosts: all
+  roles:
+    - { role: rec_server/setup }
+    - { role: rec_server/disk }
+    - { role: rec_server/docker_launch }
