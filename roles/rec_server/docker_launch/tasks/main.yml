@@ -6,6 +6,11 @@
   shell: "grep cpu.cores /proc/cpuinfo | sort -u | awk '{print $4}'"
   register: cpu_core
 
+- name: What do you want doing?
+  pause:
+    - prompt: "Re build container? Deploy config? Type the following.-> (rebuild/conf_deploy/)"
+  register: do
+
 - name: create git dir
   file: 
     path: "/home/{{ username.stdout }}/git"
@@ -21,12 +26,14 @@
     state: absent
   become: yes
   ignore_errors: yes
+  when: do.user_input != 'conf_deploy'
 
 - name: get mirakurun-epgstation
   git:
     repo: https://github.com/l3tnun/docker-mirakurun-epgstation.git
     dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
   become: yes
+  when: do.user_input != 'conf_deploy'
 
 - name: deploy tuners.yml
   template:
@@ -45,12 +52,14 @@
     src: template/docker-compose.yml.j2
     dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/docker-compose.yml"
   become: yes
+  when: do.user_input != 'conf_deploy'
 
 - name: deploy Dockerfile
   template:
     src: template/Dockerfile.j2
     dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/Dockerfile"
   become: yes
+  when: do.user_input != 'conf_deploy'
 
 - name: deploy config.json
   template:
@@ -68,12 +77,8 @@
   template:
     src: template/enc.sh.j2
     dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/enc.sh"
-  become: yes
-
-- name: add doing permission to enc.sh
-  file:
-    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/enc.sh"
     mode: "a+x"
+  become: yes
 
 - name: deploy notify.sh
   template:
@@ -82,19 +87,37 @@
     mode: "a+x"
   become: yes
 
-- name: add doing permission to notify.sh
-  file:
-    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/notify.sh"
-    mode: "a+x"
+- name: Stop EPGStation container
+  command: "docker stop docker-mirakurun-epgstation_epgstation_1"
+  become: yes
+  when: do.user_input != 'conf_deploy'
+
+- name: Stop mirakurun container
+  command: "docker stop docker-mirakurun-epgstation_mysql_1"
+  become: yes
+  when: do.user_input != 'conf_deploy'
+
+- name: Remove mirakurun container
+  command: "docker rm docker-mirakurun-epgstation_mysql_1"
+  become: yes
+  when: do.user_input != 'conf_deploy'
+
+- name: rm DB volume
+  docker_volume:
+    name: docker-mirakurun-epgstation_mysql-db
+    state: absent
+  become: yes
+  when: do.user_input != 'conf_deploy'
 
 - name: build mirakurun-epgstation (wait long time)
   command: "docker-compose build --no-cache epgstation"
   args:
     chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
   become: yes
+  when: do.user_input != 'conf_deploy'
 
 - name: launch mirakurun-epgstation
-  command: "docker-compose up -d epgstation"
   args:
     chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
+  command: "docker-compose up -d epgstation"
   become: yes
