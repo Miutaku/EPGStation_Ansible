@@ -1,9 +1,8 @@
-- name: stop apt-daily
-  shell: systemctl stop apt-daily.service apt-daily.timer
-  become: yes
-
-- name: disable apt-daily
-  shell: systemctl disable apt-daily.service apt-daily.timer
+- name: stop and disable apt-daily.timer
+  systemd:
+    name: apt-daily.timer
+    state: stopped
+    enabled: no
   become: yes
 
 - name: set timezone
@@ -37,31 +36,65 @@
       - python
   become: yes
 
+- name: check exist pip
+  stat:
+    path: /usr/local/bin/pip
+  register: pip_bin
+
+- name: check exist pip installer
+  stat:
+    path: /tmp/get-pip.py
+  register: pip_installer
+  when: not pip_bin.stat.exists
+
 - name: get pip installer
   get_url:
     url: https://bootstrap.pypa.io/get-pip.py
     dest: /tmp/
+  when: not pip_bin.stat.exists
 
 - name: install pip
   command: "python2 /tmp/get-pip.py"
   become: yes
+  when: not pip_bin.stat.exists
 
 - name: install docker-py
   pip:
     name: docker-py
   become: yes
 
+- name: docker installed check
+  stat:
+    path: /snap/bin/docker
+#      - /snap/bin/docker
+#      - /snap/bin/docker-compose
+#      - /snap/bin/docker-machine
+#      - /snap/bin/docker.compose
+#      - /snap/bin/docker.help
+#      - /snap/bin/docker.machine
+  register: docker_installed
+ 
 - name: install docker
   snap:
     name: docker
     classic: yes
     state: present
   become: yes
+  when: not docker_installed.stat.exists
 
 - name: docker service start
   command: "snap start docker.dockerd"
   become: yes
+  when: not docker_installed.stat.exists
 
-- name: reboot server (reason... updated security)
+- name: Check if a reboot is required
+  register: file
+  stat:
+    path: /var/run/reboot-required
+    get_md5: no
+
+- name: reboot server
   reboot:
+    msg: "By apt upgrade, the system will be restarted because it was requested to restart."
   become: yes
+  when: file.stat.exists == true

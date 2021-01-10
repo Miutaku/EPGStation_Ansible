@@ -1,22 +1,41 @@
 - name: What do you want doing?
   pause:
-    prompt: "Re build container? Deploy config? Type the following.-> (rebuild/conf_deploy/)"
+    prompt: "Re build container? Deploy config? First? Type the following.-> (rebuild/conf_deploy/first)"
   register: do
-
-- name: Typed word check
-  fail:
-    msg: "You shuld typed rebuild/conf_deploy."
-  when: do.user_input not in ['rebuild', 'conf_deploy']
-#  when: do.user_input != 'rebuild' or do.user_input != 'conf_deploy'
-  run_once: true
 
 - name: get username
   shell: "whoami"
   register: username
+  changed_when: False
 
 - name: get cpu core
   shell: "grep cpu.cores /proc/cpuinfo | sort -u | awk '{print $4}'"
   register: cpu_core
+  changed_when: False
+ 
+- name: check first play
+  stat:
+    path: "/home/{{ username.stdout }}/.first_play"
+  register: first_play
+  changed_when: False
+
+- name: Typed word check
+  fail:
+    msg: "You shuld typed -> (rebuild/conf_deploy/first)."
+  when: do.user_input not in ['rebuild', 'conf_deploy', 'first']
+  run_once: true
+
+- name: First play check
+  fail:
+    msg: "You have already performed this task. You should typed 'rebuild' or 'conf_deploy'"
+  when: first_play.stat.exists
+
+- name: check getting cpu core and username
+  fail:
+    msg: couldn't get username or cpucore state.
+  when: None in ['username', 'cpu_core']
+#None in ['username', 'cpu_core']
+#'{{ cpu_core }}' or '{{ username }}' = None
 
 - name: create git dir
   file: 
@@ -97,34 +116,39 @@
 - name: Stop EPGStation container
   command: "docker stop docker-mirakurun-epgstation_epgstation_1"
   become: yes
-  when: do.user_input != 'conf_deploy'
+  when: do.user_input not in ['conf_deploy', 'first']
 
 - name: Stop mirakurun container
   command: "docker stop docker-mirakurun-epgstation_mysql_1"
   become: yes
-  when: do.user_input != 'conf_deploy'
+  when: do.user_input not in ['conf_deploy', 'first']
 
 - name: Remove mirakurun container
   command: "docker rm docker-mirakurun-epgstation_mysql_1"
   become: yes
-  when: do.user_input != 'conf_deploy'
+  when: do.user_input not in ['conf_deploy', 'first']
 
 - name: rm DB volume
   docker_volume:
     name: docker-mirakurun-epgstation_mysql-db
     state: absent
   become: yes
-  when: do.user_input != 'conf_deploy'
+  when: do.user_input != 'conf_deploy' 
 
-- name: build mirakurun-epgstation (wait long time)
-  command: "docker-compose build --no-cache epgstation"
-  args:
-    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
-  become: yes
-  when: do.user_input != 'conf_deploy'
+#- name: build mirakurun-epgstation (wait long time)
+#  command: "docker-compose build --no-cache epgstation"
+#  args:
+#    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
+#  become: yes
+#  when: do.user_input != 'conf_deploy' 
+#
+#- name: launch mirakurun-epgstation
+#  args:
+#    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
+#  command: "docker-compose up -d epgstation"
+#  become: yes
 
-- name: launch mirakurun-epgstation
-  args:
-    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
-  command: "docker-compose up -d epgstation"
-  become: yes
+- name: touch played file
+  file:
+    path: "/home/{{ username.stdout }}/.first_play"
+    state: touch
