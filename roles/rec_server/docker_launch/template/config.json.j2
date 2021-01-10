@@ -121,11 +121,11 @@
         },
         {
             "name": "1080p(vaapi)",
-            "cmd": "%FFMPEG% -dual_mono_mode main -re -hwaccel vaapi -hwaccel_output_format vaapi -vaapi_device /dev/dri/card0 -i pipe:0 -vf format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=w=1920:h=1080 -c:a aac -ar 48000 -ab 192k -ac 2 -c:v h264_vaapi -level 40 -aspect 16:9 -qp 21 -movflags frag_keyframe+empty_moov+faststart+default_base_moof -y -f mp4 pipe:1"
+            "cmd": "%FFMPEG% -dual_mono_mode main -re -hwaccel vaapi -hwaccel_output_format vaapi -vaapi_device /dev/dri/renderD128 -i pipe:0 -vf format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=w=1920:h=1080 -c:a aac -ar 48000 -ab 192k -ac 2 -c:v h264_vaapi -level 40 -aspect 16:9 -qp 21 -movflags frag_keyframe+empty_moov+faststart+default_base_moof -y -f mp4 pipe:1"
         },
         {
             "name": "720p(vaapi)",
-            "cmd": "%FFMPEG% -dual_mono_mode main -re -hwaccel vaapi -hwaccel_output_format vaapi -vaapi_device /dev/dri/card0 -i pipe:0 -vf format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=w=1280:h=720 -c:a aac -ar 48000 -ab 192k -ac 2 -c:v h264_vaapi -level 40 -aspect 16:9 -qp 21 -movflags frag_keyframe+empty_moov+faststart+default_base_moof -y -f mp4 pipe:1"
+            "cmd": "%FFMPEG% -dual_mono_mode main -re -hwaccel vaapi -hwaccel_output_format vaapi -vaapi_device /dev/dri/renderD128 -i pipe:0 -vf format=nv12|vaapi,hwupload,deinterlace_vaapi,scale_vaapi=w=1280:h=720 -c:a aac -ar 48000 -ab 192k -ac 2 -c:v h264_vaapi -level 40 -aspect 16:9 -qp 21 -movflags frag_keyframe+empty_moov+faststart+default_base_moof -y -f mp4 pipe:1"
         },
         {
             "name": "480p",
