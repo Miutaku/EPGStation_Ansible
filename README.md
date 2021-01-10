@@ -96,7 +96,7 @@ Play command is here.
 ```sh
 $ git clone git@github.com:Miutaku/EPGStation_Ansible.git
 $ cd EPGStation_Ansible
-$ ansible-playbook -i inverntories/recserver playbook.yml -K 
+$ ansible-playbook -i inverntories/recserver deploy_recserver.yml -K 
 ```
 
 
