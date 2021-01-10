@@ -1,3 +1,15 @@
+- name: What do you want doing?
+  pause:
+    prompt: "Re build container? Deploy config? Type the following.-> (rebuild/conf_deploy/)"
+  register: do
+
+- name: Typed word check
+  fail:
+    msg: "You shuld typed rebuild/conf_deploy."
+  when: do.user_input not in ['rebuild', 'conf_deploy']
+#  when: do.user_input != 'rebuild' or do.user_input != 'conf_deploy'
+  run_once: true
+
 - name: get username
   shell: "whoami"
   register: username
@@ -5,11 +17,6 @@
 - name: get cpu core
   shell: "grep cpu.cores /proc/cpuinfo | sort -u | awk '{print $4}'"
   register: cpu_core
-
-- name: What do you want doing?
-  pause:
-    - prompt: "Re build container? Deploy config? Type the following.-> (rebuild/conf_deploy/)"
-  register: do
 
 - name: create git dir
   file: 
