@@ -135,18 +135,18 @@
   become: yes
   when: do.user_input != 'conf_deploy' 
 
-#- name: build mirakurun-epgstation (wait long time)
-#  command: "docker-compose build --no-cache epgstation"
-#  args:
-#    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
-#  become: yes
-#  when: do.user_input != 'conf_deploy' 
-#
-#- name: launch mirakurun-epgstation
-#  args:
-#    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
-#  command: "docker-compose up -d epgstation"
-#  become: yes
+- name: build mirakurun-epgstation (wait long time)
+  command: "docker-compose build --no-cache epgstation"
+  args:
+    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
+  become: yes
+  when: do.user_input != 'conf_deploy' 
+
+- name: launch mirakurun-epgstation
+  args:
+    chdir: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/"
+  command: "docker-compose up -d epgstation"
+  become: yes
 
 - name: touch played file
   file:
