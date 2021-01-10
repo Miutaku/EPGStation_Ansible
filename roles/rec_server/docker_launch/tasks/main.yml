@@ -5,7 +5,6 @@
 - name: get cpu core
   shell: "grep cpu.cores /proc/cpuinfo | sort -u | awk '{print $4}'"
   register: cpu_core
-  become: yes
 
 - name: create git dir
   file: 
