@@ -43,7 +43,7 @@
     dest: /tmp/
 
 - name: install pip
-  command: "python2 get-pip.py"
+  command: "python2 /tmp/get-pip.py"
   become: yes
 
 - name: install docker-py
