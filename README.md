@@ -51,7 +51,14 @@ Used Image: [osboxes.org's Ubuntu 20.04](https://www.osboxes.org/ubuntu/#ubuntu-
 
 ## How to use
 
-### 1. Replace slack's webhook url (optional)
+### 1. Git clone this repository
+
+```sh
+$ git clone git@github.com:Miutaku/EPGStation_Ansible.git
+$ cd EPGStation_Ansible
+```
+
+### 2. Replace slack's webhook url (optional)
 
 Replace `roles/rec_server/docker_launch/vars/main.yml`.
 
@@ -59,7 +66,7 @@ Replace `roles/rec_server/docker_launch/vars/main.yml`.
 $ echo "webhook: <your webhookurl>" > roles/rec_server/docker_launch/vars/main.yml
 ```
 
-### 2. Using VAAPI (optional)
+### 3. Using VAAPI (optional)
 
 ```sh
 $ vim roles/rec_server/docker_launch/template/docker-compose.yml.j2
@@ -69,7 +76,7 @@ $ vim roles/rec_server/docker_launch/template/docker-compose.yml.j2
 +             - /dev/dri:/dev/dri
 ```
 
-### 3. Change servername file
+### 4. Change servername file
 
 Add hostname `inventories/recserver`
 
@@ -80,7 +87,7 @@ $ echo <your servername> >> inventories/recserver
 ```
 
 
-### 4. Modfiy mirakurun config
+### 5. Modfiy mirakurun config
 
 Edit the following to suit your environment.
 - roles/rec_server/docker_launch/template/tuners.yml.j2
@@ -89,13 +96,11 @@ Edit the following to suit your environment.
 see sample: https://github.com/l3tnun/docker-mirakurun-epgstation/tree/master/mirakurun/conf
 
 
-### 5. Play ansible playbook
+### 6. Play ansible playbook
 
-Play command is here.
+Play command here.
 
 ```sh
-$ git clone git@github.com:Miutaku/EPGStation_Ansible.git
-$ cd EPGStation_Ansible
 $ ansible-playbook -i inverntories/recserver deploy_recserver.yml -K 
 ```
 
