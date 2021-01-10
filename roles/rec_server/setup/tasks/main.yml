@@ -33,9 +33,25 @@
       - vim
       - openssh-server
       - git
+      - curl
+      - python
   become: yes
 
-- name: docker install
+- name: get pip installer
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/
+
+- name: install pip
+  command: "python2 get-pip.py"
+  become: yes
+
+- name: install docker-py
+  pip:
+    name: docker-py
+  become: yes
+
+- name: install docker
   snap:
     name: docker
     classic: yes
