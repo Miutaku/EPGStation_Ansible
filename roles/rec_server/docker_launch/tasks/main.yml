@@ -30,10 +30,10 @@
     msg: "You have already performed this task. You should typed 'rebuild' or 'conf_deploy'"
   when: first_play.stat.exists
 
-- name: check getting cpu core and username
-  fail:
-    msg: couldn't get username or cpucore state.
-  when: None in ['username', 'cpu_core']
+#- name: check getting cpu core and username
+#  fail:
+#    msg: couldn't get username or cpucore state.
+#  when: None in ['username', 'cpu_core']
 #None in ['username', 'cpu_core']
 #'{{ cpu_core }}' or '{{ username }}' = None
 
