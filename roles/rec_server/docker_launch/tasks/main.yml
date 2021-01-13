@@ -87,23 +87,16 @@
   become: yes
   when: do.user_input != 'conf_deploy'
 
-- name: deploy config.json
+- name: deploy config.yml
   template:
     src: template/config.json.j2
-    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/config.json"
+    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/config.yml"
   become: yes
 
 - name: deploy enc.js
   template:
     src: template/enc.js.j2
     dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/enc.js"
-  become: yes
-
-- name: deploy enc.sh
-  template:
-    src: template/enc.sh.j2
-    dest: "/home/{{ username.stdout }}/git/docker-mirakurun-epgstation/epgstation/config/enc.sh"
-    mode: "a+x"
   become: yes
 
 - name: deploy notify.sh
