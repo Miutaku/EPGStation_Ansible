@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
     mirakurun:
         image: chinachu/mirakurun
@@ -13,14 +13,16 @@ services:
             - ./mirakurun/data:/app-data
         environment:
             TZ: "Asia/Tokyo"
-#        devices:
-#            - /dev/dvb:/dev/dvb
+        devices:
+#            - /dev/bus:/dev/bus
+            - /dev/dvb:/dev/dvb
         restart: always
         logging:
             driver: json-file
             options:
                 max-file: "1"
                 max-size: 10m
+
     mysql:
         image: mariadb:10.4
         volumes:
@@ -39,26 +41,21 @@ services:
                 max-file: "3"
 
     epgstation:
-        build:
-            context: epgstation
-            args:
-                - CPUCORE={{ cpu_core.stdout }}
+        build: epgstation
         volumes:
             - /etc/localtime:/etc/localtime:ro
             - ./epgstation/config:/app/config
             - ./epgstation/data:/app/data
             - ./epgstation/thumbnail:/app/thumbnail
             - ./epgstation/logs:/app/logs
-            - /mnt/extHDD/recorded/ts:/app/recorded
-            - /mnt/extHDD/recorded/mp4:/app/encorded
-            - /mnt/extHDD/recorded/tmp:/tmp
+            - ./recorded:/app/recorded
         environment:
             TZ: "Asia/Tokyo"
 #        devices:
 #            - /dev/dri:/dev/dri
         depends_on:
-            - mysql
             - mirakurun
+            - mysql
         ports:
             - "8888:8888"
             - "8889:8889"
@@ -68,3 +65,4 @@ services:
 volumes:
     mysql-db:
         driver: local
+
