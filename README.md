@@ -1,5 +1,7 @@
 # RecServer_Ansible
 
+**for v1 branch**
+
 Setup TV recorder server with Ansible.
 
 Using repository: [l3tnun/docker-mirakurun-epgstation](https://github.com/l3tnun/docker-mirakurun-epgstation)
