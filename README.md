@@ -4,7 +4,7 @@
 
 Setup TV recorder server with Ansible.
 
-Using repository: [l3tnun/docker-mirakurun-epgstation](https://github.com/l3tnun/docker-mirakurun-epgstation)
+Using repository: [l3tnun/docker-mirakurun-epgstation](https://github.com/l3tnun/docker-mirakurun-epgstation/tree/v2)
 
 This Ansible support Ubuntu 20.04 LTS only.
 
